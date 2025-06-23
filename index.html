@@ -138,9 +138,11 @@
 </head>
 <body>
   <div id="topo-funcoes">
+  <button id="installBtn" hidden>📲 Instalar App</button>
       <div class="bloco-topo">Nível<input type="text" id="nivelQtd" value="1"></div>
       <div class="bloco-topo" id="tempo">00:05:00</div>
   </div>
+  <button onclick="resetarProgresso()">Resetar Progresso</button>
   <div id="tabuleiro"></div>
   <!--<button onclick="reiniciarNivel()">Reiniciar</button>-->
 
@@ -183,7 +185,14 @@
 // Exemplo da função que será chamada ao acabar o tempo
 function tempoEsgotado() {
   alert("Tempo esgotado! O nível será reiniciado!");
+  
+function resetarProgresso() {
+  localStorage.removeItem('nivelAtual');
+  nivelAtual = 0;
   iniciarNivel();
+}
+
+    iniciarNivel();
 }
       tempoInterval = startCronometro();
   
@@ -293,7 +302,8 @@ function tempoEsgotado() {
 }
   ];
 
-    let nivelAtual = 0;
+    const nivelSalvo = localStorage.getItem('nivelAtual');
+let nivelAtual = nivelSalvo !== null ? Math.min(parseInt(nivelSalvo), niveis.length - 1) : 0;
     let palavras = [];
 
     function embaralhar(array) {
@@ -412,10 +422,18 @@ function tempoEsgotado() {
       const todosFixos = tabuleiro.querySelectorAll('.palavra:not(.fixa)').length === 0;
       if (todosFixos && gruposFormados > 0) {
         setTimeout(() => {
+          localStorage.setItem('nivelAtual', nivelAtual + 1);
           nivelAtual++;
           if (nivelAtual < niveis.length) {
             alert(`Parabéns! Vamos para o nível ${nivelAtual + 1}!`);
-            iniciarNivel();
+            
+function resetarProgresso() {
+  localStorage.removeItem('nivelAtual');
+  nivelAtual = 0;
+  iniciarNivel();
+}
+
+    iniciarNivel();
           } else {
             alert("Parabéns! Você completou todos os níveis!");
           }
@@ -424,8 +442,22 @@ function tempoEsgotado() {
     }
 
     function reiniciarNivel() {
-      iniciarNivel();
+      
+function resetarProgresso() {
+  localStorage.removeItem('nivelAtual');
+  nivelAtual = 0;
+  iniciarNivel();
+}
+
+    iniciarNivel();
     }
+
+    
+function resetarProgresso() {
+  localStorage.removeItem('nivelAtual');
+  nivelAtual = 0;
+  iniciarNivel();
+}
 
     iniciarNivel();
   
@@ -454,7 +486,14 @@ inputNivel.addEventListener('keydown', (e) => {
     if (!isNaN(numero)) {
       if (numero >= 1 && numero <= niveis.length) {
         nivelAtual = numero - 1;
-        iniciarNivel();
+        
+function resetarProgresso() {
+  localStorage.removeItem('nivelAtual');
+  nivelAtual = 0;
+  iniciarNivel();
+}
+
+    iniciarNivel();
       } else {
         alert("Nível inexistente!");
         inputNivel.value = nivelAtual + 1; // restaura valor atual
@@ -500,6 +539,27 @@ divRelogio.addEventListener('click', () => {
     inputNivel.value = nivelAtual + 1;
   }
 });
-  </script>
+  
+    // Instalação do PWA
+    let deferredPrompt;
+    const installBtn = document.getElementById('installBtn');
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      installBtn.hidden = false;
+    });
+
+    installBtn.addEventListener('click', async () => {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        console.log(`Usuário escolheu: ${outcome}`);
+        installBtn.hidden = true;
+        deferredPrompt = null;
+      }
+    });
+
+</script>
 </body>
 </html>
